@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 const csv = require('csv')
 
 const getTicketsWithTags = require('./getTicketsWithTags.js')
@@ -11,16 +13,24 @@ getTicketsWithTags()
       return [
         ticket.created,
         'Zendesk',
-        ticket.subject.replace('[design-system-support]', ''),
-        ticket.strippedTags,
+        ticket.subject.replace('[design-system-support]', '').trim(),
+        ticket.strippedTags.join(','),
         `https://govuk.zendesk.com/agent/tickets/${ticket.ticket_id}`
       ]
     })
 
     const csvInput = [csvHeaders, ...csvRows];
-    csv.stringify(csvInput, function(err, data){
-      console.log(data)
-      console.timeEnd('getTicketsWithTags')
+    csv.stringify(csvInput, (err, data) => {
+      if (err) {
+        return console.error(`Error stringifying CSV input: ${err}`)
+      }
+      fs.writeFile('./zendesk.csv', data, (err) => {
+        if (err) {
+          return console.error(`Error writing CSV file: ${err}`)
+        }
+        console.log('tickets.csv has been generated');
+        console.timeEnd('getTicketsWithTags')
+      });
     })
   })
   .catch(error => {
