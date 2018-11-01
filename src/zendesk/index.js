@@ -11,7 +11,7 @@ getTicketsWithTags()
       return [
         ticket.created,
         'Zendesk',
-        ticket.ticket.subject.replace('[design-system-support]', ''),
+        ticket.subject.replace('[design-system-support]', ''),
         ticket.strippedTags,
         `https://govuk.zendesk.com/agent/tickets/${ticket.ticket_id}`
       ]
