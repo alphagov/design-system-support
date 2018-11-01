@@ -65,7 +65,7 @@ function getTicketsWithTags () {
                 return reject(error)
               }
               const id = ticket.ticket_id
-              console.log('Getting tags for ticket', id)
+              // console.log('Getting tags for ticket', id)
               request(['tickets', id, 'tags'])
                 .then(body => {
                   if (body.status === 404) {
@@ -103,13 +103,4 @@ function getTicketsWithTags () {
   })
 }
 
-console.time('getTicketsWithTags')
-getTicketsWithTags()
-  .then(ticketsWithTags => {
-    console.timeEnd('getTicketsWithTags')
-    console.log(ticketsWithTags)
-    console.log(ticketsWithTags.length)
-  })
-  .catch(error => {
-    console.error(error)
-  })
+module.exports = getTicketsWithTags
