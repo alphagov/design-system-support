@@ -24,6 +24,8 @@ const client = zendesk.createClient({
   debug: false
 })
 
+// Not all endpoints are in the zendesk API, but to avoid having to reimplement pagination (for now)
+// I'm using both the client and custom endpoints
 function request (paths) {
   const btoa = string => Buffer.from(string).toString('base64')
   return fetch(`https://govuk.zendesk.com/api/v2/${paths.join('/')}.json`, { 
