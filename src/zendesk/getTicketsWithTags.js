@@ -1,6 +1,6 @@
-const { promisify } = require('util')
-  
 require('dotenv').config()
+
+const { promisify } = require('util')
 
 const fetch = require('node-fetch')
 const Headers = fetch.Headers

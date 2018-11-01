@@ -28,7 +28,7 @@ getTicketsWithTags()
         if (err) {
           return console.error(`Error writing CSV file: ${err}`)
         }
-        console.log('tickets.csv has been generated');
+        console.log('zendesk.csv has been generated');
         console.timeEnd('getTicketsWithTags')
       });
     })
