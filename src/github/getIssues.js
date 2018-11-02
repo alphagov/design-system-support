@@ -33,18 +33,13 @@ async function getIssues ({
       const labels = issue.labels.map(label => label.name)
       const isTeamMember = teamMemberIDs.includes(issue.user.id)
       if (isTeamMember && !labels.includes('user-request')) {
-        issue.labels.push({ name: 'internal' })
+        issue.raisedByTheTeam = true
       }
       return issue
     })
 
     const formattedIssues = internalLabelledIssues.map(issue => {
-      return {
-        repository_name: issue.repository_url.replace('https://api.github.com/repos/', ''),
-        timestamp: issue.created_at,
-        url: issue.html_url,
-        title: issue.title,
-        labels:
+      const strippedLabels =
           issue.labels
             .map(label => label.name)
             // Some labels we dont need in the output
@@ -58,6 +53,13 @@ async function getIssues ({
               }
               return label
             })
+      if (issue.raisedByTheTeam) {
+        strippedLabels.push('internal')
+      }
+      return {
+        ...issue,
+        repository_name: issue.repository_url.replace('https://api.github.com/repos/', ''),
+        strippedLabels
       }
     })
 

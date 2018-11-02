@@ -43,11 +43,11 @@ getIssues({
     const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
     const rows = issues.map(issue => {
       return [
-        issue.timestamp,
+        issue.created_at,
         issue.repository_name,
         issue.title,
-        issue.labels.join(','),
-        issue.url
+        issue.strippedLabels.join(','),
+        issue.html_url
       ]
     })
 
