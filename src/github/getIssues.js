@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const octokit = require('@octokit/rest')()
 
 octokit.authenticate({

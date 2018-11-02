@@ -1,5 +1,7 @@
+require('dotenv').config()
+
 const getIssues = require('./getIssues.js')
-const generateCSV = require('./generateCSV.js')
+const generateCSV = require('../utilities/generateCSV.js')
 
 const repositories = [
   'alphagov/govuk-frontend',

@@ -1,37 +1,27 @@
-const fs = require('fs')
-
-const csv = require('csv')
+require('dotenv').config()
 
 const getTicketsWithTags = require('./getTicketsWithTags.js')
+const generateCSV = require('../utilities/generateCSV.js')
 
 console.time('getTicketsWithTags')
 getTicketsWithTags()
   .then(ticketsWithTags => {
-    const csvHeaders = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
-
-    const csvRows = ticketsWithTags.map(ticket => {
+    const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
+    const rows = ticketsWithTags.map(ticket => {
       return [
         ticket.created,
         'Zendesk',
-        ticket.subject.replace('[design-system-support]', '').trim(),
+        ticket.subject,
         ticket.strippedTags.join(','),
-        `https://govuk.zendesk.com/agent/tickets/${ticket.ticket_id}`
+        ticket.htmlUrl
       ]
     })
 
-    const csvInput = [csvHeaders, ...csvRows]
-    csv.stringify(csvInput, (err, data) => {
-      if (err) {
-        return console.error(`Error stringifying CSV input: ${err}`)
-      }
-      fs.writeFile('./zendesk.csv', data, (err) => {
-        if (err) {
-          return console.error(`Error writing CSV file: ${err}`)
-        }
-        console.log('zendesk.csv has been generated')
-        console.timeEnd('getTicketsWithTags')
-      })
-    })
+    return generateCSV({ filename: 'zendesk', headers, rows })
+  })
+  .then(result => {
+    console.timeEnd('getTicketsWithTags')
+    console.log(result)
   })
   .catch(error => {
     console.error(error)
