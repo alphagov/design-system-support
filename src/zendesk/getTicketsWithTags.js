@@ -6,6 +6,10 @@ const DESIGN_SYSTEM_VIEW = 360001206339
 
 const { ZENDESK_USERNAME, ZENDESK_PASSWORD } = process.env
 
+if (!ZENDESK_USERNAME || !ZENDESK_PASSWORD) {
+  throw new Error('No credentials are set for Zendesk, see README section "Adding credentials"')
+}
+
 const client = zendesk.createClient({
   username: ZENDESK_USERNAME,
   password: ZENDESK_PASSWORD,

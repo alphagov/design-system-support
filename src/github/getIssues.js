@@ -1,8 +1,13 @@
 const octokit = require('@octokit/rest')()
 
+const { GITHUB_TOKEN } = process.env
+if (!GITHUB_TOKEN) {
+  throw new Error('No credentials are set for Github, see README section "Adding credentials"')
+}
+
 octokit.authenticate({
   type: 'token',
-  token: process.env.GITHUB_TOKEN
+  token: GITHUB_TOKEN
 })
 
 const { paginateIssues } = require('./paginate.js')(octokit)
