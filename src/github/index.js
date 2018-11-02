@@ -29,12 +29,16 @@ const labelsToRemove = [
 const labelMap = {
 }
 
+// How long to go back
+const createdMonthsAgo = 1
+
 console.time('getIssues')
 getIssues({
   repositories,
   excludedLabels,
   labelsToRemove,
-  labelMap
+  labelMap,
+  createdMonthsAgo
 })
   .then(issues => {
     const csvHeaders = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
