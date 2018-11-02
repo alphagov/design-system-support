@@ -2,6 +2,20 @@
 
 This repository contains code to help us do support on the GOV.UK Design System team.
 
+## Requirements
+
+- Git
+- Node.js (npm)
+- Security access to credentials
+
+## Setup
+
+Clone this repository to your machine locally and then pull it's dependencies using
+
+```
+npm install
+```
+
 ## Adding credentials
 
 You'll need access to the [Design System team credentials](https://github.com/alphagov/design-system-team-credentials) repository.
