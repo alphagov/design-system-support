@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const getIssues = require('./getIssues.js')
 const generateCSV = require('../utilities/generateCSV.js')
+const formatDateForCSV = require('../utilities/formatDateForCSV.js')
 
 const repositories = [
   'alphagov/govuk-frontend',
@@ -43,7 +44,7 @@ getIssues({
     const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
     const rows = issues.map(issue => {
       return [
-        issue.created_at,
+        formatDateForCSV(issue.created_at),
         issue.repository_name,
         issue.title,
         issue.strippedLabels.join(','),

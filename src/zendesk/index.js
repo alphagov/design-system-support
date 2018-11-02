@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const getTicketsWithTags = require('./getTicketsWithTags.js')
 const generateCSV = require('../utilities/generateCSV.js')
+const formatDateForCSV = require('../utilities/formatDateForCSV.js')
 
 console.time('getTicketsWithTags')
 getTicketsWithTags()
@@ -9,7 +10,7 @@ getTicketsWithTags()
     const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
     const rows = ticketsWithTags.map(ticket => {
       return [
-        ticket.created,
+        formatDateForCSV(ticket.created),
         'Zendesk',
         ticket.subject,
         ticket.strippedTags.join(','),
