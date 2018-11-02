@@ -1,8 +1,5 @@
-const fs = require('fs')
-
-const csv = require('csv')
-
 const getIssues = require('./getIssues.js')
+const generateCSV = require('./generateCSV.js')
 
 const repositories = [
   'alphagov/govuk-frontend',
@@ -41,9 +38,8 @@ getIssues({
   createdMonthsAgo
 })
   .then(issues => {
-    const csvHeaders = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
-
-    const csvRows = issues.map(issue => {
+    const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
+    const rows = issues.map(issue => {
       return [
         issue.timestamp,
         issue.repository_name,
@@ -53,19 +49,11 @@ getIssues({
       ]
     })
 
-    const csvInput = [csvHeaders, ...csvRows]
-    csv.stringify(csvInput, (err, data) => {
-      if (err) {
-        return console.error(`Error stringifying CSV input: ${err}`)
-      }
-      fs.writeFile('./github.csv', data, (err) => {
-        if (err) {
-          return console.error(`Error writing CSV file: ${err}`)
-        }
-        console.log('github.csv has been generated')
-        console.timeEnd('getIssues')
-      })
-    })
+    return generateCSV({ filename: 'github', headers, rows })
+  })
+  .then(result => {
+    console.timeEnd('getIssues')
+    console.log(result)
   })
   .catch(error => {
     console.error(error)

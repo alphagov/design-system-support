@@ -1,6 +1,6 @@
 const { formatDateYYYYMMDD } = require('./utilities.js')
 
-function createQuery ({
+function createQuery (octokit, {
   repositories,
   excludedLabels,
   createdMonthsAgo
