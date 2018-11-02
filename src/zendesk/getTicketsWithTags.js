@@ -1,7 +1,5 @@
 require('dotenv').config()
 
-const { promisify } = require('util')
-
 const fetch = require('node-fetch')
 const Headers = fetch.Headers
 const zendesk = require('node-zendesk')
@@ -12,7 +10,7 @@ const RateLimiter = require('limiter').RateLimiter
 const DESIGN_SYSTEM_VIEW = 360001206339
 
 // https://developer.zendesk.com/rest_api/docs/core/introduction#rate-limits
-const limiter = new RateLimiter(700, 'minute')  // Assume 'Enterprise' plan to start with
+const limiter = new RateLimiter(700, 'minute') // Assume 'Enterprise' plan to start with
 
 const { ZENDESK_USERNAME, ZENDESK_PASSWORD } = process.env
 
@@ -28,9 +26,9 @@ const client = zendesk.createClient({
 // I'm using both the client and custom endpoints
 function request (paths) {
   const btoa = string => Buffer.from(string).toString('base64')
-  return fetch(`https://govuk.zendesk.com/api/v2/${paths.join('/')}.json`, { 
+  return fetch(`https://govuk.zendesk.com/api/v2/${paths.join('/')}.json`, {
     headers: new Headers({
-      'Authorization': 'Basic '+btoa(ZENDESK_USERNAME + ':' + ZENDESK_PASSWORD), 
+      'Authorization': 'Basic ' + btoa(ZENDESK_USERNAME + ':' + ZENDESK_PASSWORD),
       'Content-Type': 'application/x-www-form-urlencoded'
     })
   })
@@ -38,7 +36,7 @@ function request (paths) {
 
 function getTicketsWithTags () {
   return new Promise((resolve, reject) => {
-    limiter.removeTokens(1, function(error, remainingRequests) {
+    limiter.removeTokens(1, function (error, remainingRequests) {
       if (error) {
         return console.error(error)
       }
@@ -46,20 +44,20 @@ function getTicketsWithTags () {
         if (error) {
           return console.error('Error getting tickets for view: ', error)
         }
-      
-        const allTickets = 
+
+        const allTickets =
           resultList
             .map(result => result.rows)
             .reduce((a, b) => {
               return a.concat(b)
             }, [])
-    
+
         // const tickets = [allTickets[0], allTickets[1], allTickets[2]]
         const tickets = allTickets
-    
+
         const ticketsWithTagsPromises = tickets.map(ticket => {
           return new Promise((resolve, reject) => {
-            limiter.removeTokens(1, function(error, remainingRequests) {
+            limiter.removeTokens(1, function (error, remainingRequests) {
               if (error) {
                 console.error(error)
                 return reject(error)
@@ -93,7 +91,7 @@ function getTicketsWithTags () {
             })
           })
         })
-    
+
         Promise
           .all(ticketsWithTagsPromises)
           .then(resolve)

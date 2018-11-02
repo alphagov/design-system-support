@@ -19,7 +19,7 @@ getTicketsWithTags()
       ]
     })
 
-    const csvInput = [csvHeaders, ...csvRows];
+    const csvInput = [csvHeaders, ...csvRows]
     csv.stringify(csvInput, (err, data) => {
       if (err) {
         return console.error(`Error stringifying CSV input: ${err}`)
@@ -28,9 +28,9 @@ getTicketsWithTags()
         if (err) {
           return console.error(`Error writing CSV file: ${err}`)
         }
-        console.log('zendesk.csv has been generated');
+        console.log('zendesk.csv has been generated')
         console.timeEnd('getTicketsWithTags')
-      });
+      })
     })
   })
   .catch(error => {

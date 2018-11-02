@@ -15,7 +15,7 @@ const excludedLabels = [
   'greenkeeper',
   'spike',
   'prepare-for-first-timers',
-  'first-timers-only',
+  'first-timers-only'
 ]
 
 const labelsToRemove = [
@@ -53,7 +53,7 @@ getIssues({
       ]
     })
 
-    const csvInput = [csvHeaders, ...csvRows];
+    const csvInput = [csvHeaders, ...csvRows]
     csv.stringify(csvInput, (err, data) => {
       if (err) {
         return console.error(`Error stringifying CSV input: ${err}`)
@@ -62,9 +62,9 @@ getIssues({
         if (err) {
           return console.error(`Error writing CSV file: ${err}`)
         }
-        console.log('github.csv has been generated');
+        console.log('github.csv has been generated')
         console.timeEnd('getIssues')
-      });
+      })
     })
   })
   .catch(error => {

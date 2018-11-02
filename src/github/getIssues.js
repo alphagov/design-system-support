@@ -1,6 +1,5 @@
 require('dotenv').config()
 
-const csv = require('csv')
 const octokit = require('@octokit/rest')()
 
 octokit.authenticate({
@@ -8,36 +7,9 @@ octokit.authenticate({
   token: process.env.GITHUB_TOKEN
 })
 
-const getTeamMembers = require('./getTeamMembers.js')
-
-async function paginate (method, options) {
-  let response = await method({ ...options, per_page: 100 })
-  let { data } = response
-  while (octokit.hasNextPage(response)) {
-    response = await octokit.getNextPage(response)
-    data = data.concat(response.data)
-  }
-  return data
-}
-
-
-async function paginateIssues (method, options) {
-  let response = await method({ ...options, per_page: 100 })
-  let data = response.data.items
-  while (octokit.hasNextPage(response)) {
-    response = await octokit.getNextPage(response)
-    data = data.concat(response.data.items)
-  }
-  return data
-}
-
-function formatDateYYYYMMDD (date) {
-  return [
-    date.getFullYear(),
-    ('0' + (date.getMonth() + 1)).slice(-2),
-    ('0' + date.getDate()).slice(-2)
-  ].join('-')
-}
+const { paginateIssues } = require('./paginate.js')(octokit)
+const getTeamMembers = require('./getTeamMembers.js')(octokit)
+const createQuery = require('./createQuery.js')(octokit)
 
 async function getIssues ({
   repositories,
@@ -46,32 +18,19 @@ async function getIssues ({
   labelMap,
   createdMonthsAgo
 }) {
-    
   try {
-
-    const repositoriesParamString = repositories.map(repo => 'repo:' + repo).join(' ')
-    const excludedLabelsParamString = excludedLabels.map(repo => '-label:' + repo).join(' ')
-    
-    
-    // Get issues created `createdMonthsAgo` month ago
-    const date = new Date()
-    date.setMonth(date.getMonth() - createdMonthsAgo)
-    const createdAtDate = formatDateYYYYMMDD(date);
-    
-    const baseQuery = `is:issue ${repositoriesParamString} ${excludedLabelsParamString} created:>${createdAtDate}`
-    console.log('base query', baseQuery)
-
-    // You can prototype a search string using the interface: https://github.com/issues
-    const issues = await paginateIssues(octokit.search.issues, {
-      q: `${baseQuery}`
+    const query = createQuery({
+      repositories,
+      excludedLabels,
+      createdMonthsAgo
     })
+    const issues = await paginateIssues(octokit.search.issues, { q: query })
 
-    const teamMembers = await getTeamMembers(octokit)
+    const teamMembers = await getTeamMembers()
     const teamMemberIDs = teamMembers.map(member => member.id)
-    
-    // We want issues that are only raised by our users,
-    // any issues that are raised by us on behalf or our users will be tagged with 'user-request'
-    // any raised by us should be labelled internal.
+
+    // Issues raised by team members should be labelled as `internal`
+    // Unless it is an issue this is raised which are labelled with 'user-request'
     const internalLabelledIssues = issues.map(issue => {
       const labels = issue.labels.map(label => label.name)
       const isTeamMember = teamMemberIDs.includes(issue.user.id)
@@ -80,42 +39,32 @@ async function getIssues ({
       }
       return issue
     })
-  
-    // We want to keep non-user raised issues but label them internal
-    // const userRaisedIssues = issues.map(issue => {
-    //   const labels = issue.labels.map(label => label.name)
-    //   if (issue.author_association === 'MEMBER' && !labels.includes('user-request')) {
-    //     issue.labels.push({ name: 'internal' })
-    //   }
-    //   console.log(issue.labels)
-    //   return issue
-    // })
-    
+
     const formattedIssues = internalLabelledIssues.map(issue => {
       return {
         repository_name: issue.repository_url.replace('https://api.github.com/repos/', ''),
         timestamp: issue.created_at,
         url: issue.html_url,
         title: issue.title,
-        labels: issue.labels.map(label => label.name)
-                 // Some labels we dont need in the output
-                 .filter(label => {
-                   return !labelsToRemove.includes(label)
-                 })
-                // Other labels need to have their name changed to match the internal taxonomy
-                 .map(label => {
-                   if (labelMap[label]) {
-                     return labelMap[label] 
-                   }
-                   return label
-                 })
+        labels:
+          issue.labels
+            .map(label => label.name)
+            // Some labels we dont need in the output
+            .filter(label => {
+              return !labelsToRemove.includes(label)
+            })
+            // Other labels need to have their name changed to match the internal taxonomy
+            .map(label => {
+              if (labelMap[label]) {
+                return labelMap[label]
+              }
+              return label
+            })
       }
-    }) 
-    
-    console.log(`Total user raised issues : ${formattedIssues.length}`)
-    
+    })
+
     return formattedIssues
-  } catch(error) {
+  } catch (error) {
     console.error(error)
   }
 }
