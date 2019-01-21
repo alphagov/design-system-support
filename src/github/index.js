@@ -8,7 +8,7 @@ const repositories = [
   'alphagov/govuk-frontend',
   'alphagov/govuk-design-system',
   'alphagov/govuk-prototype-kit',
-  'alphagov/accessible-autpcomplete'
+  'alphagov/accessible-autocomplete'
 ]
 
 const excludedLabels = [
