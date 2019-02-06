@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const { argv: options } = require('yargs')
+
 const getIssues = require('./getIssues.js')
 const generateCSV = require('../utilities/generateCSV.js')
 const formatDateForCSV = require('../utilities/formatDateForCSV.js')
@@ -20,7 +22,7 @@ const excludedLabels = [
 ]
 
 const labelsToRemove = [
-  'user-request',
+  'submitted-by-user',
   'recorded-in-trello',
   'help-wanted',
   'investigation'
@@ -31,7 +33,8 @@ const labelMap = {
 }
 
 // How long to go back
-const createdMonthsAgo = 1
+const createdMonthsAgo = typeof options.createdMonthsAgo !== 'undefined' ? options.createdMonthsAgo : 1
+console.log(`Looking for issues from ${createdMonthsAgo} month(s) ago`)
 
 console.time('getIssues')
 getIssues({

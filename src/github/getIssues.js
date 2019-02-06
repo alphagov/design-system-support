@@ -32,12 +32,12 @@ async function getIssues ({
     const teamMembers = await getTeamMembers()
     const teamMemberIDs = teamMembers.map(member => member.id)
 
-    // Issues raised by team members should be labelled as `internal`
-    // Unless it is an issue this is raised which are labelled with 'user-request'
+    // Issues raised by team members should be labelled as `submitted-by-team`
+    // Unless it is an issue this is raised which are labelled with 'submitted-by-user'
     const internalLabelledIssues = issues.map(issue => {
       const labels = issue.labels.map(label => label.name)
       const isTeamMember = teamMemberIDs.includes(issue.user.id)
-      if (isTeamMember && !labels.includes('user-request')) {
+      if (isTeamMember && !labels.includes('submitted-by-user')) {
         issue.raisedByTheTeam = true
       }
       return issue
@@ -59,7 +59,9 @@ async function getIssues ({
               return label
             })
       if (issue.raisedByTheTeam) {
-        strippedLabels.push('internal')
+        strippedLabels.push('submitted-by-team')
+      } else {
+        strippedLabels.push('submitted-by-user')
       }
       return {
         ...issue,
