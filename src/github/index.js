@@ -15,7 +15,8 @@ const excludedLabels = [
   'greenkeeper',
   'spike',
   'prepare-for-first-timers',
-  'first-timers-only'
+  'first-timers-only',
+  'Learn GitHub for content designers'
 ]
 
 const labelsToRemove = [

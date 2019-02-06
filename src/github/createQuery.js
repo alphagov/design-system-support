@@ -6,7 +6,7 @@ function createQuery (octokit, {
   createdMonthsAgo
 }) {
   const repositoriesParamString = repositories.map(repo => 'repo:' + repo).join(' ')
-  const excludedLabelsParamString = excludedLabels.map(repo => '-label:' + repo).join(' ')
+  const excludedLabelsParamString = excludedLabels.map(label => `-label:"${label}"`).join(' ')
 
   // Get issues created `createdMonthsAgo` month ago
   const date = new Date()
