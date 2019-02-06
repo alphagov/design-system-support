@@ -50,3 +50,11 @@ npm run build:csv:zendesk
 ```
 npm run build:csv:github
 ```
+
+You can adjust how far back to pull Github issues by passing the `createdMonthsAgo` argument in the command line.
+
+The default is 1 month.
+
+```
+npm run build:csv:github -- --createdMonthsAgo=3
+```
