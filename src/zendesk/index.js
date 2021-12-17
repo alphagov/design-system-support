@@ -7,14 +7,15 @@ const formatDateForCSV = require('../utilities/formatDateForCSV.js')
 console.time('getTicketsWithTags')
 getTicketsWithTags()
   .then(ticketsWithTags => {
-    const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url' ]
+    const headers = [ 'timestamp', 'channel', 'title', 'tag', 'url', 'body' ]
     const rows = ticketsWithTags.map(ticket => {
       return [
         formatDateForCSV(ticket.created),
         'Zendesk',
         ticket.subject,
         ticket.strippedTags.join(','),
-        ticket.htmlUrl
+        ticket.htmlUrl,
+        ticket.ticket.description
       ]
     })
 
