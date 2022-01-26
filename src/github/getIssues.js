@@ -1,16 +1,15 @@
-const octokit = require('@octokit/rest')()
+const { Octokit } = require('@octokit/rest')
 
 const { GITHUB_TOKEN } = process.env
 if (!GITHUB_TOKEN) {
   throw new Error('No credentials are set for Github, see README section "Adding credentials"')
 }
 
-octokit.authenticate({
-  type: 'token',
-  token: GITHUB_TOKEN
+const octokit = new Octokit({
+  auth: GITHUB_TOKEN
 })
 
-const { paginateIssues } = require('./paginate.js')(octokit)
+const { paginate } = require('./paginate.js')(octokit)
 const getTeamMembers = require('./getTeamMembers.js')(octokit)
 const createQuery = require('./createQuery.js')(octokit)
 
@@ -27,7 +26,7 @@ async function getIssues ({
       excludedLabels,
       createdMonthsAgo
     })
-    const issues = await paginateIssues(octokit.search.issues, { q: query })
+    const issues = await paginate('GET /search/issues', { q: query })
 
     const teamMembers = await getTeamMembers()
     const teamMemberIDs = teamMembers.map(member => member.id)
