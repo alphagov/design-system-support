@@ -4,7 +4,7 @@ const GOVUKDesignSystemTeamId = 2397445
 
 async function getTeamMembers (octokit, id = GOVUKDesignSystemTeamId) {
   try {
-    const { data } = await octokit.orgs.getTeamMembers({ team_id: id })
+    const { data } = await octokit.teams.listMembers({ team_id: id })
     return data
   } catch (error) {
     console.error(`getTeamMembers failed: ${error}`)
