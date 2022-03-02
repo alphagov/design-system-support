@@ -4,6 +4,9 @@ const zendesk = require('node-zendesk')
 // which we can use to get all the tickets relevant for the GOV.UK Design System.
 const DESIGN_SYSTEM_VIEW = 360001206339
 
+// Tags of interest should start with this string, otherwise they won't end up in the CSV
+const DESIGN_SYSTEM_TAG_PREFIX = 'ds_'
+
 const { ZENDESK_USERNAME, ZENDESK_PASSWORD } = process.env
 
 if (!ZENDESK_USERNAME || !ZENDESK_PASSWORD) {
@@ -39,9 +42,9 @@ function getTicketsWithTags () {
       const ticketsWithTagsPromises = tickets.map(async (ticket) => {
         const tags = await getTagsFromTicket(ticket.ticket_id)
         // We only want tags with the correct prefix
-        const tagsWithPrefix = tags.filter(tag => tag.startsWith('design-system'))
+        const tagsWithPrefix = tags.filter(tag => tag.startsWith(DESIGN_SYSTEM_TAG_PREFIX))
         // However we can remove the prefix for use in analysis
-        const strippedTags = tagsWithPrefix.map(tag => tag.replace('design-system-', ''))
+        const strippedTags = tagsWithPrefix.map(tag => tag.replace(DESIGN_SYSTEM_TAG_PREFIX, ''))
 
         // Remove noisey subject tag
         ticket.subject = ticket.subject.replace('[design-system-support]', '').trim()
