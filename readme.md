@@ -18,7 +18,7 @@ npm install
 
 ## Adding credentials
 
-You'll need access to the [Design System team credentials](https://github.com/alphagov/design-system-team-credentials) repository.
+You'll need access to BitWarden to access the credentials for ZenDesk.
 
 1. Copy .env.example to .env
 2. Fill in credentials
